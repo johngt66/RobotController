@@ -11,6 +11,7 @@ namespace RobotController.TB6612FNG
         private PWM MotorSpeed = null;
         private OutputPort DirectionPin1 = null;
         private OutputPort DirectionPin2 = null;
+        public bool Enabled = true;
 
         public Motor(PWMChannel pwm, Pin directionPin1, Pin directionPin2)
         {
@@ -20,11 +21,12 @@ namespace RobotController.TB6612FNG
             DirectionPin1 = new OutputPort(directionPin1, false);
             DirectionPin2 = new OutputPort(directionPin2, false);
             MotorSpeed.Start();
+            Enabled = true;
         }
 
         public void SetSpeed(int speed)
         {
-            if (speed <= 100 && speed >= -100)
+            if (Enabled && speed <= 100 && speed >= -100)
             {
                 var d1 = (speed > 0);
                 var d2 = (speed < 0);
@@ -32,7 +34,6 @@ namespace RobotController.TB6612FNG
 
                 DirectionPin1.Write(d1);
                 DirectionPin2.Write(d2);
-                MotorSpeed.DutyCycle = 1;
                 MotorSpeed.DutyCycle = cycle;
             }
         }

@@ -47,10 +47,13 @@
     <Reference Include="Microsoft.SPOT.Hardware.SerialPort" />
     <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="Microsoft.SPOT.Net" />
+    <Reference Include="Microsoft.SPOT.TinyCore" />
+    <Reference Include="NetduinoExtensions, Version=4.3.2.1, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="SecretLabs.NETMF.Hardware" />
     <Reference Include="SecretLabs.NETMF.Hardware.Netduino" />
     <Reference Include="System" />
     <Reference Include="GoBus" />
+    <Reference Include="System.Text.RegularExpressions" />
   </ItemGroup>
   <ItemGroup />
 </Project>

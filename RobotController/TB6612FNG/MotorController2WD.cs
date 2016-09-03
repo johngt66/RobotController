@@ -11,13 +11,25 @@ namespace RobotController.TB6612FNG
         private Motor RightMotor = null;
 
         private OutputPort StandBy = null;
-
+        public bool Enabled
+        {
+            get
+            {
+                return LeftMotor.Enabled && RightMotor.Enabled;
+            }
+            set
+            {
+                LeftMotor.Enabled = value;
+                RightMotor.Enabled = value;
+            }
+        }
         public MotorController2WD(PWMChannel leftPWM, Pin leftDir1, Pin leftDir2, PWMChannel rightPWM, Pin rightDir1, Pin rightDir2, Pin standby)
         {
             StandBy = new OutputPort(standby, true);
 
             LeftMotor = new Motor(leftPWM, leftDir1, leftDir2);
             RightMotor = new Motor(rightPWM, rightDir1, rightDir2);
+            Enabled = true;
         }
 
         public void SetLeft(int speed)
