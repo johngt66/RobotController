@@ -69,9 +69,12 @@ namespace RobotController
             }
             try
             {
-                //Start listen for web requests
-                socket.Listen(10);
-                ListenForRequest(socket);
+                while (true)
+                {
+                    //Start listen for web requests
+                    socket.Listen(10);
+                    ListenForRequest(socket);
+                }
             }
             catch (Exception ex)
             {
@@ -97,17 +100,16 @@ namespace RobotController
             using (var ctrl = InitMotorController())
             {
                 ctrl.Enabled = false;
-                while (true)
+                using (Socket clientSocket = socket.Accept())
                 {
-                    using (Socket clientSocket = socket.Accept())
+                    //Get clients IP
+                    IPEndPoint clientIP = clientSocket.RemoteEndPoint as IPEndPoint;
+                    EndPoint clientEndPoint = clientSocket.RemoteEndPoint;
+
+                    if (clientSocket.Poll(-1, SelectMode.SelectRead))
                     {
-                        //Get clients IP
-                        IPEndPoint clientIP = clientSocket.RemoteEndPoint as IPEndPoint;
-                        EndPoint clientEndPoint = clientSocket.RemoteEndPoint;
-
-                        if (clientSocket.Poll(50000, SelectMode.SelectRead))
+                        while (true)
                         {
-
                             //int byteCount = cSocket.Available;
                             int bytesReceived = clientSocket.Available;
                             if (bytesReceived > 0)
@@ -123,17 +125,22 @@ namespace RobotController
                                 //clientSocket.Send(Encoding.UTF8.GetBytes(header), header.Length, SocketFlags.None);
                                 clientSocket.Send(Encoding.UTF8.GetBytes(response), response.Length, SocketFlags.None);
 
-                                Parse(request, ctrl);
+                                if (!Parse(request, ctrl))
+                                    break;
                             }
+                            else
+                                Thread.Sleep(100);
                         }
-                        clientSocket.Close();
                     }
+                    clientSocket.Close();
                 }
             }
         }
 
-        private static void Parse(string request, MotorController2WD ctrl)
+        private static bool Parse(string request, MotorController2WD ctrl)
         {
+            var result = true;
+            request = request.ToUpper();
             var rex = Regex.Match(request, @"^L([+-]?\d{3}),R([+-]?\d{3})$");
             if (rex.Success)
             {
@@ -144,8 +151,11 @@ namespace RobotController
             }
             else if (request.Equals("MOTOR-START"))
                 ctrl.Enabled = true;
-            else
+            else if (request.Equals("MOTOR-STOP"))
                 ctrl.Enabled = false;
+            else if (request.Equals("DISCONNECT"))
+                result = false;
+            return result;
         }
 
         private static void MotorControllerTest()
