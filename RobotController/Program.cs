@@ -71,7 +71,7 @@ namespace RobotController
             {
                 while (true)
                 {
-                    //Start listen for web requests
+                    // Start listen for web requests
                     socket.Listen(10);
                     ListenForRequest(socket);
                 }
